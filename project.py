@@ -69,7 +69,7 @@ def main():
         writer.writerows(valid)
 
     with open("rejected.csv", "w", newline="") as f:
-        writer = csv.DictWriter(f1, fieldnames=["name", "email", "phone", "reason"])
+        writer = csv.DictWriter(f, fieldnames=["name", "email", "phone", "reason"])
         writer.writeheader()
         writer.writerows(errors)
 
