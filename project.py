@@ -27,3 +27,12 @@ def normalize_email(email):
     if not re.fullmatch(r"[\w.]+@\w+(\.\w+)+", clean_email):
         raise ValueError("invalid email")
     return clean_email
+
+
+def normalize_phone(phone):
+    phone_digits = re.sub(r"\D", "", phone)
+    if len(phone_digits) == 10:
+        return phone_digits
+    if len(phone_digits) == 11 and phone_digits[0] == "1":
+        return phone_digits[1:]
+    raise ValueError("invalid phone")
