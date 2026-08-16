@@ -1,3 +1,5 @@
+import re
+
 def main():
     # 1. check command line argument
     # 2. check if file exists and can be opened
@@ -18,3 +20,10 @@ def normalize_name(name):
     if not clean_name:
         raise ValueError("empty name")
     return clean_name.title()
+
+
+def normalize_email(email):
+    clean_email = email.strip().lower()
+    if not re.fullmatch(r"[\w.]+@\w+(\.\w+)+", clean_email):
+        raise ValueError("invalid email")
+    return clean_email
