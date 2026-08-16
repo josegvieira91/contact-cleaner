@@ -2,6 +2,8 @@ import re
 import sys
 import csv
 
+
+
 def main():
     # 1. check command line argument
     if len(sys.argv) != 2:
@@ -20,10 +22,26 @@ def main():
                 sys.exit("invalid header: expected name,email,phone")
 
             # 4. loop to read and process data
-            # 4a. try to normalize name, email and phone
-            # 4b. if normalization fails -> add to errors list with reason
-            # 4c. if email already seen -> add to errors list as duplicate
+            for row in reader:
+                # 4a. try to normalize name, email and phone
+                try:
+                    name = normalize_name(row["name"])
+                    email = normalize_email(row["email"])
+                    phone = normalize_phone(row["phone"])
+                except ValueError as e:
+                    # 4b. if normalization fails -> add to errors list with reason
+                    errors.append({"name": row["name"], "email": row["email"], "phone": row["phone"], "reason": str(e)})
+                    continue
+
+                # 4c. if email already seen -> add to errors list as duplicate
+                if email in seen:
+                    errors.append(
+                        {"name": row["name"], "email": row["email"], "phone": row["phone"], "reason": "duplicate"})
+                    continue
+
             # 4d. otherwise -> add email to seen, add contact to valid list
+                seen.add(email)
+                valid.append({"name": name, "email": email, "phone": phone})
 
     except FileNotFoundError:
         sys.exit("could not open file")
