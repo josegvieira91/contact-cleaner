@@ -10,3 +10,11 @@ def main():
         # 4d. otherwise -> add email to seen, add contact to valid list
     # 5. write output files (clean and rejected)
     # 6. summary on terminal
+    ...
+
+
+def normalize_name(name):
+    clean_name = name.strip()
+    if not clean_name:
+        raise ValueError("empty name")
+    return clean_name.title()
