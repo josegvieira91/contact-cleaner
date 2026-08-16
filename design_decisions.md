@@ -170,5 +170,29 @@ final polish. Ugly but working comes first.
 - sample.csv, a small messy input covering every rejection type, IS
   committed, so anyone cloning the repo can run the tool immediately.
 
-Decisions 1 through 14 cover the design phase, written down before the first
+## 15. Email regex: pragmatic, not RFC-complete
+
+The pattern is `[\w.]+@\w+(\.\w+)+`, checked with re.fullmatch.
+
+I'm not trying to cover the full email RFC. That regex is famously enormous
+and nobody uses it in practice. What I want is the essential structure:
+user part (letters, digits, underscore, dots), @, then domain blocks
+separated by dots, at least two of them.
+
+Two choices worth recording:
+
+- fullmatch instead of search with ^ and $ anchors. Forgetting an anchor is
+  a bug I've hit before: an unanchored validator silently accepts trailing
+  garbage ("jose@gmail.com xyz" would pass). fullmatch anchors by
+  definition, so the whole class of bug stops being possible.
+- `(\.\w+)+` with plus, not optional. My first sketch modeled .com.br as a
+  special case (2-3 letters, then optionally dot plus 2 more). That rejects
+  .info, .travel and subdomains. The general rule "one or more dot-blocks"
+  covers all of them with no special cases, and the mandatory first block
+  is what rejects TLD-less garbage like jose@gmail.
+
+Known cost, accepted: a@b.c passes (single-letter TLDs don't exist in
+practice). Not worth another rule.
+
+Decisions 1 through 15 cover the design phase, written down before the first
 function. New entries get added as implementation decisions come up.
