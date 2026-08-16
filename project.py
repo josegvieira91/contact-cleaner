@@ -1,6 +1,9 @@
 import re
 import sys
 import csv
+from rich.table import Table
+from rich.console import Console
+from rich.panel import Panel
 
 
 
@@ -30,13 +33,26 @@ def main():
                     phone = normalize_phone(row["phone"])
                 except ValueError as e:
                     # 4b. if normalization fails -> add to errors list with reason
-                    errors.append({"name": row["name"], "email": row["email"], "phone": row["phone"], "reason": str(e)})
+                    errors.append(
+                        {
+                            "name": row["name"],
+                            "email": row["email"],
+                            "phone": row["phone"],
+                            "reason": str(e),
+                        }
+                    )
                     continue
 
                 # 4c. if email already seen -> add to errors list as duplicate
                 if email in seen:
                     errors.append(
-                        {"name": row["name"], "email": row["email"], "phone": row["phone"], "reason": "duplicate"})
+                        {
+                            "name": row["name"],
+                            "email": row["email"],
+                            "phone": row["phone"],
+                            "reason": "duplicate",
+                        }
+                    )
                     continue
 
                 # 4d. otherwise -> add email to seen, add contact to valid list
@@ -52,13 +68,45 @@ def main():
         writer.writeheader()
         writer.writerows(valid)
 
-    with open("error.csv", "w", newline="") as f1:
+    with open("rejected.csv", "w", newline="") as f:
         writer = csv.DictWriter(f1, fieldnames=["name", "email", "phone", "reason"])
         writer.writeheader()
         writer.writerows(errors)
 
     # 6. summary on terminal
+    clean = len(valid)
+    duplicates = 0
+    for row in errors:
+        if row["reason"] == "duplicate":
+            duplicates += 1
+    rejected = len(errors) - duplicates
+    read = clean + len(errors)
 
+    console = Console()
+
+    table = Table(
+        show_header=True,
+        header_style="bold cyan",
+        show_lines=True,
+    )
+
+    table.add_column("Metric", style="bold white", justify="left")
+    table.add_column("Count", justify="right")
+
+    table.add_row("Total Read", f"[bold]{read}[/]")
+    table.add_row("Clean", f"[green]{clean}[/]")
+    table.add_row("Duplicates", f"[yellow]{duplicates}[/]")
+    table.add_row("Rejected", f"[red]{rejected}[/]")
+
+    summary_panel = Panel(
+        table,
+        title="[bold green]Processing Complete[/]",
+        subtitle="[dim]Pipeline Summary[/]",
+        border_style="bright_blue",
+        expand=False,
+    )
+
+    console.print(summary_panel)
 
 
 def normalize_name(name):
