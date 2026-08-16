@@ -39,16 +39,26 @@ def main():
                         {"name": row["name"], "email": row["email"], "phone": row["phone"], "reason": "duplicate"})
                     continue
 
-            # 4d. otherwise -> add email to seen, add contact to valid list
+                # 4d. otherwise -> add email to seen, add contact to valid list
                 seen.add(email)
                 valid.append({"name": name, "email": email, "phone": phone})
 
     except FileNotFoundError:
         sys.exit("could not open file")
 
-
     # 5. write output files (clean and rejected)
+    with open("clean.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["name", "email", "phone"])
+        writer.writeheader()
+        writer.writerows(valid)
+
+    with open("error.csv", "w", newline="") as f1:
+        writer = csv.DictWriter(f1, fieldnames=["name", "email", "phone", "reason"])
+        writer.writeheader()
+        writer.writerows(errors)
+
     # 6. summary on terminal
+
 
 
 def normalize_name(name):
