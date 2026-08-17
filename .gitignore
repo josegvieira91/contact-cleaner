@@ -4,3 +4,8 @@ __pycache__/
 clean.csv
 rejected.csv
 test*.csv
+presentation.html
+presentation_silent.mp4
+audio/
+presentation_final.mp4
+.DS_Store

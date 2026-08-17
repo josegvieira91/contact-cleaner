@@ -1,6 +1,6 @@
 # Contact Cleaner
 
-#### Video demo: [URL HERE]
+#### Video demo: https://youtu.be/nCwGATlj2YQ
 
 #### Description
 
